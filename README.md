@@ -18,6 +18,6 @@ Embedded Systems
 My goal is to continue building my knowledge in computer engineering and contribute to innovative and impactful technology projects in the future.
 
 ## Contact Me
--Email: elhelesya@gmail.com
--GitHub: https://github.com/alielhelisy
--LinkedIn: https://www.linkedin.com/in/ali-elhelisy-8ba760405
+- Email: elhelesya@gmail.com
+- GitHub: https://github.com/alielhelisy
+- LinkedIn: https://www.linkedin.com/in/ali-elhelisy-8ba760405
