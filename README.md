@@ -16,3 +16,7 @@ Embedded Systems
 
 ## Goal
 My goal is to continue building my knowledge in computer engineering and contribute to innovative and impactful technology projects in the future.
+
+## Contact Me
+Email: elhelesya@gmail.com
+GitHub: https://github.com/alielhelisy
