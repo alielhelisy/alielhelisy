@@ -20,3 +20,4 @@ My goal is to continue building my knowledge in computer engineering and contrib
 ## Contact Me
 Email: elhelesya@gmail.com
 GitHub: https://github.com/alielhelisy
+LinkedIn: https://www.linkedin.com/in/ali-elhelisy-8ba760405
