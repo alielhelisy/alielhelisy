@@ -1,4 +1,4 @@
-# Hi, I'm Ali Elhelisy 👋
+# Hi, I'm Ali Elhelisy
 
 I am a Computer Engineering student with a strong interest in both software and hardware systems. I am passionate about learning new technologies, developing technical skills, and exploring how computer systems are designed and optimized.
 
