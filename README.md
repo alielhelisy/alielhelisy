@@ -9,7 +9,7 @@ I like turning course ideas into working systems: database-backed apps, clean OO
 - Building a **Football Scouting App** with Flask, SQL Server, authentication, multi-user CRUD, scouting reports, search, admin tools, and tests.
 - Designing software models and documentation for scouting workflows through SAD and OOP project versions.
 - Practicing database design with a **Premier League Database Management System**.
-- Exploring C++ systems topics through DNS/HTTP routing simulation, QoS measurement, and multithreading performance analysis.
+- Exploring C/C++ systems topics through DNS/HTTP routing simulation, QoS measurement, and multithreading performance analysis.
 
 ## Featured Projects
 
@@ -20,14 +20,14 @@ I like turning course ideas into working systems: database-backed apps, clean OO
 | [Football Scouting App OOP](https://github.com/alielhelisy/Football-Scouting-App-OOP) | Object-oriented version of the scouting application concepts | Java, OOP |
 | [Premier League Database Management System](https://github.com/alielhelisy/Premier-League-Database-Management-System) | Relational database design and SQL practice | T-SQL |
 | [Simulation of DNS/HTTP Communication with Routing and QoS Measurement](https://github.com/alielhelisy/Simulation-of-DNS-HTTP-Communication-with-Routing-and-QoS-Measurement-Using-C-) | Network communication simulation with routing and quality-of-service measurements | C++ |
-| [Performance Analysis of Multithreading in C](https://github.com/alielhelisy/Performance-Analysis-of-Multithreading-in-C-using-Parallel-Computation) | Parallel computation and multithreading performance study | C, parallel computing |
+| [Performance Analysis of Multithreading in C](https://github.com/alielhelisy/Performance-Analysis-of-Multithreading-in-C-using-Parallel-Computation) | Parallel computation and multithreading performance study | C/C++, parallel computing |
 
 ## Tech Stack
 
 **Languages:** Python, C++, C, Java, JavaScript, T-SQL  
 **Web:** Flask, Jinja2, HTML, CSS  
 **Databases:** Microsoft SQL Server, relational database design  
-**Tools and Concepts:** Git, pytest, OOP, CRUD systems, software analysis and design, networking, multithreading
+**Tools and Concepts:** Git, pytest, OOP, CRUD systems, software analysis and design, networking, multithreading, parallel computing
 
 ## Areas I Enjoy
 
