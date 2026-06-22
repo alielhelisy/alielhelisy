@@ -5,437 +5,277 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ali Elhelisy — CV</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      font-size: 13.5px;
-      color: #1a1a2e;
-      background: #f4f6fb;
-      line-height: 1.55;
+      font-family: Arial, sans-serif;
+      font-size: 11pt;
+      color: #000;
+      background: #fff;
+      line-height: 1.4;
     }
 
     .page {
-      max-width: 820px;
-      margin: 36px auto;
-      background: #fff;
-      box-shadow: 0 4px 32px rgba(0,0,0,0.10);
-      border-radius: 10px;
-      overflow: hidden;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 48px 52px;
     }
 
     /* ── Header ── */
-    header {
-      background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
-      color: #fff;
-      padding: 36px 44px 28px;
+    .header {
+      text-align: center;
+      margin-bottom: 18px;
     }
-    header h1 {
-      font-size: 2rem;
+    .header h1 {
+      font-size: 22pt;
       font-weight: 700;
       letter-spacing: 0.5px;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
-    header .tagline {
-      font-size: 0.95rem;
-      color: #a8c0e8;
-      margin-bottom: 16px;
+    .contact-line {
+      font-size: 10pt;
+      color: #000;
     }
-    .contact-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 18px;
-      font-size: 0.82rem;
-      color: #c9d8ef;
-    }
-    .contact-row a {
-      color: #c9d8ef;
+    .contact-line a {
+      color: #000;
       text-decoration: none;
     }
-    .contact-row a:hover { text-decoration: underline; }
-    .contact-row span::before {
-      content: attr(data-icon) " ";
+    .sep { margin: 0 6px; color: #555; }
+
+    /* ── Divider ── */
+    hr {
+      border: none;
+      border-top: 1.5px solid #000;
+      margin: 4px 0 12px;
+    }
+    hr.thin {
+      border-top: 0.5px solid #bbb;
+      margin: 8px 0 10px;
     }
 
-    /* ── Body ── */
-    .body {
-      display: grid;
-      grid-template-columns: 1fr 260px;
-    }
-
-    /* ── Main (left) ── */
-    .main { padding: 30px 36px; }
-
-    /* ── Sidebar (right) ── */
-    .sidebar {
-      background: #f0f4fc;
-      padding: 30px 24px;
-      border-left: 1px solid #dde4f0;
-    }
-
-    /* ── Section titles ── */
-    .section-title {
-      font-size: 0.70rem;
+    /* ── Section heading ── */
+    .section-heading {
+      font-size: 11pt;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 1.4px;
-      color: #0f3460;
-      border-bottom: 2px solid #0f3460;
-      padding-bottom: 4px;
-      margin-bottom: 16px;
-      margin-top: 28px;
+      letter-spacing: 1.2px;
+      margin-bottom: 2px;
+      margin-top: 18px;
     }
-    .section-title:first-child { margin-top: 0; }
+    .section-heading:first-of-type { margin-top: 0; }
 
-    .sidebar .section-title {
-      font-size: 0.68rem;
+    /* ── Entry ── */
+    .entry { margin-bottom: 12px; }
+    .entry:last-child { margin-bottom: 0; }
+
+    .entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .entry-title {
+      font-weight: 700;
+      font-size: 10.5pt;
+    }
+    .entry-date {
+      font-size: 10pt;
+      white-space: nowrap;
+    }
+    .entry-subtitle {
+      font-size: 10pt;
+      font-style: italic;
+      margin-bottom: 4px;
+    }
+
+    /* ── Bullets ── */
+    ul {
+      padding-left: 18px;
+      margin-top: 4px;
+    }
+    li {
+      font-size: 10.5pt;
+      margin-bottom: 3px;
+    }
+
+    /* ── Skills table ── */
+    .skills-grid {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 4px;
+      font-size: 10.5pt;
+    }
+    .skills-grid td {
+      vertical-align: top;
+      padding: 2px 0;
+    }
+    .skills-grid td:first-child {
+      font-weight: 700;
+      width: 160px;
+      padding-right: 8px;
     }
 
     /* ── Summary ── */
-    .summary p {
-      color: #333;
-      font-size: 0.88rem;
+    .summary-text {
+      font-size: 10.5pt;
+      margin-top: 6px;
     }
-
-    /* ── Projects ── */
-    .project { margin-bottom: 20px; }
-    .project-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .project-name {
-      font-weight: 700;
-      font-size: 0.92rem;
-      color: #0f3460;
-    }
-    .project-name a {
-      color: inherit;
-      text-decoration: none;
-    }
-    .project-name a:hover { text-decoration: underline; }
-    .project-tech {
-      font-size: 0.73rem;
-      color: #fff;
-      background: #0f3460;
-      border-radius: 3px;
-      padding: 2px 8px;
-      white-space: nowrap;
-    }
-    .project-desc {
-      font-size: 0.84rem;
-      color: #444;
-      margin-top: 5px;
-    }
-    .project-desc ul {
-      padding-left: 18px;
-      margin-top: 3px;
-    }
-    .project-desc li { margin-bottom: 2px; }
-
-    /* ── Education ── */
-    .edu-entry { margin-bottom: 14px; }
-    .edu-degree {
-      font-weight: 700;
-      font-size: 0.92rem;
-      color: #0f3460;
-    }
-    .edu-school {
-      font-size: 0.86rem;
-      color: #333;
-    }
-    .edu-date {
-      font-size: 0.80rem;
-      color: #888;
-    }
-
-    /* ── Skill pills ── */
-    .skill-group { margin-bottom: 14px; }
-    .skill-label {
-      font-size: 0.73rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: #0f3460;
-      margin-bottom: 5px;
-    }
-    .pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-    }
-    .pill {
-      font-size: 0.75rem;
-      background: #dde4f0;
-      color: #1a1a2e;
-      border-radius: 4px;
-      padding: 2px 9px;
-    }
-
-    /* ── Interests ── */
-    .interests ul {
-      padding-left: 16px;
-      font-size: 0.83rem;
-      color: #444;
-    }
-    .interests li { margin-bottom: 4px; }
 
     @media print {
       body { background: #fff; }
-      .page { box-shadow: none; margin: 0; border-radius: 0; }
-    }
-
-    @media (max-width: 680px) {
-      .body { grid-template-columns: 1fr; }
-      .sidebar { border-left: none; border-top: 1px solid #dde4f0; }
+      .page { padding: 32px 40px; }
+      a { color: #000; text-decoration: none; }
     }
   </style>
 </head>
 <body>
 <div class="page">
 
-  <!-- ── HEADER ── -->
-  <header>
-    <h1>Ali Elhelisy</h1>
-    <div class="tagline">Computer Engineering Student</div>
-    <div class="contact-row">
-      <span data-icon="✉"><a href="mailto:elhelesya@gmail.com">elhelesya@gmail.com</a></span>
-      <span data-icon="⌂"><a href="https://github.com/alielhelisy" target="_blank">github.com/alielhelisy</a></span>
-      <span data-icon="in"><a href="https://www.linkedin.com/in/ali-elhelisy-8ba760405" target="_blank">linkedin.com/in/ali-elhelisy-8ba760405</a></span>
+  <!-- ══════ HEADER ══════ -->
+  <div class="header">
+    <h1>ALI ELHELISY</h1>
+    <div class="contact-line">
+      <a href="mailto:elhelesya@gmail.com">elhelesya@gmail.com</a>
+      <span class="sep">|</span>
+      <a href="https://github.com/alielhelisy">github.com/alielhelisy</a>
+      <span class="sep">|</span>
+      <a href="https://www.linkedin.com/in/ali-elhelisy-8ba760405">linkedin.com/in/ali-elhelisy-8ba760405</a>
     </div>
-  </header>
+  </div>
+  <hr>
 
-  <div class="body">
+  <!-- ══════ SUMMARY ══════ -->
+  <div class="section-heading">Summary</div>
+  <hr class="thin">
+  <p class="summary-text">
+    Computer Engineering student with practical experience building full-stack web applications,
+    relational database systems, object-oriented software, and low-level systems programs.
+    Proficient across multiple languages and frameworks including Python, Java, C++, C#, and
+    JavaScript. Experienced in REST API design, MVC architecture, SQL Server database design,
+    and software engineering practices including testing, documentation, and version control.
+  </p>
 
-    <!-- ── MAIN ── -->
-    <div class="main">
+  <!-- ══════ EDUCATION ══════ -->
+  <div class="section-heading">Education</div>
+  <hr class="thin">
+  <div class="entry">
+    <div class="entry-header">
+      <span class="entry-title">Bachelor of Science in Computer Engineering</span>
+      <span class="entry-date">Expected: [Year]</span>
+    </div>
+    <div class="entry-subtitle">[University Name]</div>
+  </div>
 
-      <!-- Summary -->
-      <div class="section-title">Profile</div>
-      <div class="summary">
-        <p>
-          Computer Engineering student with hands-on experience building full-stack web applications,
-          relational database systems, object-oriented desktop applications, and low-level systems
-          programs in C/C++. Comfortable across the entire stack — from schema design and SQL to
-          REST APIs, MVC web apps, and concurrent/parallel computation. Strong interest in software
-          engineering principles, database design, computer networks, and system performance.
-        </p>
-      </div>
+  <!-- ══════ TECHNICAL SKILLS ══════ -->
+  <div class="section-heading">Technical Skills</div>
+  <hr class="thin">
+  <table class="skills-grid">
+    <tr>
+      <td>Languages:</td>
+      <td>Python, C++, C, Java, C#, JavaScript, T-SQL</td>
+    </tr>
+    <tr>
+      <td>Web Frameworks:</td>
+      <td>Flask, ASP.NET Core MVC, Node.js, Express, Jinja2, HTML, CSS</td>
+    </tr>
+    <tr>
+      <td>Databases:</td>
+      <td>Microsoft SQL Server, relational schema design, EER/UML modeling, triggers</td>
+    </tr>
+    <tr>
+      <td>Concepts &amp; Tools:</td>
+      <td>Object-oriented programming, REST API design, MVC, CRUD, Swagger, Git, GitHub, pytest, software analysis and design, multithreading, parallel computing, computer networking</td>
+    </tr>
+  </table>
 
-      <!-- Projects -->
-      <div class="section-title">Projects</div>
+  <!-- ══════ PROJECTS ══════ -->
+  <div class="section-heading">Projects</div>
+  <hr class="thin">
 
-      <div class="project">
-        <div class="project-header">
-          <div class="project-name">
-            <a href="https://github.com/alielhelisy/Football-Scouting-App-Software-Engineering" target="_blank">
-              Football Scouting App — Software Engineering
-            </a>
-          </div>
-          <span class="project-tech">Python · Flask · SQL Server</span>
-        </div>
-        <div class="project-desc">
-          <ul>
-            <li>Full-stack web application for managing football players, scouting reports, user accounts, search, and admin controls.</li>
-            <li>Implemented multi-user authentication with role-based access (admin / scout), CRUD operations across multiple entities, and server-side search.</li>
-            <li>Wrote automated tests with <strong>pytest</strong> and used <strong>Jinja2</strong> templates for dynamic HTML rendering.</li>
-          </ul>
-        </div>
-      </div>
+  <div class="entry">
+    <div class="entry-header">
+      <span class="entry-title">Football Scouting Web Application — Software Engineering</span>
+      <span class="entry-date">May 2026</span>
+    </div>
+    <div class="entry-subtitle">Python, Flask, Microsoft SQL Server, Jinja2, HTML, CSS, pytest</div>
+    <ul>
+      <li>Built a multi-user web application for managing football players, scouting reports, user accounts, and admin controls using Flask and SQL Server.</li>
+      <li>Implemented role-based authentication (admin and scout roles) with session management and access control across all routes.</li>
+      <li>Developed full CRUD functionality for players and scouting reports, plus server-side search and filtering.</li>
+      <li>Wrote an automated test suite using pytest to verify application logic and API endpoints.</li>
+    </ul>
+  </div>
 
-      <div class="project">
-        <div class="project-header">
-          <div class="project-name">
-            <a href="https://github.com/alielhelisy/Football-Scouting-App-Web-Programming" target="_blank">
-              Football Scouting App — Web Programming
-            </a>
-          </div>
-          <span class="project-tech">C# · ASP.NET Core MVC · SQL Server</span>
-        </div>
-        <div class="project-desc">
-          <ul>
-            <li>Re-implemented the scouting platform using <strong>ASP.NET Core MVC</strong> with Entity Framework patterns, covering players, reports, positions, accounts, and admin/scout roles.</li>
-            <li>Applied MVC separation of concerns, Razor views, and model validation.</li>
-          </ul>
-        </div>
-      </div>
+  <div class="entry">
+    <div class="entry-header">
+      <span class="entry-title">Football Scouting Web Application — Web Programming</span>
+      <span class="entry-date">Jun 2026</span>
+    </div>
+    <div class="entry-subtitle">C#, ASP.NET Core MVC, Microsoft SQL Server, HTML, CSS</div>
+    <ul>
+      <li>Re-implemented the scouting platform using ASP.NET Core MVC, applying the Model-View-Controller pattern with Razor views and model validation.</li>
+      <li>Built features for player management, scouting reports, position filters, user accounts, and admin/scout role separation.</li>
+    </ul>
+  </div>
 
-      <div class="project">
-        <div class="project-header">
-          <div class="project-name">
-            <a href="https://github.com/alielhelisy/Football-Scouting-App-System-Analysis-and-Design" target="_blank">
-              Football Scouting App — System Analysis &amp; Design
-            </a>
-          </div>
-          <span class="project-tech">Node.js · Express · Swagger · JavaScript</span>
-        </div>
-        <div class="project-desc">
-          <ul>
-            <li>Designed and built a REST API backend with <strong>Node.js + Express</strong> and documented all endpoints with <strong>Swagger</strong>.</li>
-            <li>Produced SAD deliverables: use-case diagrams, ER models, and workflow documentation for the scouting platform.</li>
-          </ul>
-        </div>
-      </div>
+  <div class="entry">
+    <div class="entry-header">
+      <span class="entry-title">Football Scouting Web Application — System Analysis and Design</span>
+      <span class="entry-date">May 2026</span>
+    </div>
+    <div class="entry-subtitle">Node.js, Express, Microsoft SQL Server, Swagger, JavaScript</div>
+    <ul>
+      <li>Designed and implemented a REST API backend with Node.js and Express, fully documented using Swagger/OpenAPI specification.</li>
+      <li>Produced system analysis and design deliverables including use-case diagrams, ER models, and workflow documentation.</li>
+    </ul>
+  </div>
 
-      <div class="project">
-        <div class="project-header">
-          <div class="project-name">
-            <a href="https://github.com/alielhelisy/Football-Scouting-App-Object-Oriented-Programming" target="_blank">
-              Football Scouting App — Object-Oriented Programming
-            </a>
-          </div>
-          <span class="project-tech">Java · Swing · OOP</span>
-        </div>
-        <div class="project-desc">
-          <ul>
-            <li>Desktop GUI application built with <strong>Java Swing</strong>, applying OOP principles (encapsulation, inheritance, polymorphism) to model players, scouts, reviews, and roles.</li>
-            <li>Managed local data persistence and implemented role-based logic in a clean class hierarchy.</li>
-          </ul>
-        </div>
-      </div>
+  <div class="entry">
+    <div class="entry-header">
+      <span class="entry-title">Football Scouting Application — Object-Oriented Programming</span>
+      <span class="entry-date">May 2026</span>
+    </div>
+    <div class="entry-subtitle">Java, Swing, OOP</div>
+    <ul>
+      <li>Developed a desktop GUI application using Java Swing, applying OOP principles — encapsulation, inheritance, and polymorphism — to model players, scouts, reviews, and roles.</li>
+      <li>Implemented local data persistence and role-based access within a clean class hierarchy.</li>
+    </ul>
+  </div>
 
-      <div class="project">
-        <div class="project-header">
-          <div class="project-name">
-            <a href="https://github.com/alielhelisy/Premier-League-Database-Management-System" target="_blank">
-              Premier League Database Management System
-            </a>
-          </div>
-          <span class="project-tech">T-SQL · SQL Server</span>
-        </div>
-        <div class="project-desc">
-          <ul>
-            <li>Designed a normalized relational schema covering clubs, players, matches, seasons, and statistics with constraints and referential integrity.</li>
-            <li>Implemented <strong>triggers</strong>, complex analytical queries, set operations, and a UML/EER diagram; documented the full data model.</li>
-          </ul>
-        </div>
-      </div>
+  <div class="entry">
+    <div class="entry-header">
+      <span class="entry-title">Premier League Database Management System</span>
+      <span class="entry-date">May 2026</span>
+    </div>
+    <div class="entry-subtitle">T-SQL, Microsoft SQL Server</div>
+    <ul>
+      <li>Designed a normalized relational database schema covering clubs, players, matches, seasons, and statistics, including primary/foreign key constraints and referential integrity rules.</li>
+      <li>Implemented database triggers, complex analytical queries, and set operations; produced full UML/EER documentation.</li>
+    </ul>
+  </div>
 
-      <div class="project">
-        <div class="project-header">
-          <div class="project-name">
-            <a href="https://github.com/alielhelisy/Simulation-of-DNS-HTTP-Communication-with-Routing-and-QoS-Measurement" target="_blank">
-              DNS/HTTP Network Simulation
-            </a>
-          </div>
-          <span class="project-tech">C++ · Winsock · Networking</span>
-        </div>
-        <div class="project-desc">
-          <ul>
-            <li>Simulated <strong>DNS resolution over UDP</strong> and <strong>HTTP communication over TCP</strong> using the Winsock API.</li>
-            <li>Implemented shortest-path routing, QoS measurement, and modeled BER / packet-loss behavior.</li>
-          </ul>
-        </div>
-      </div>
+  <div class="entry">
+    <div class="entry-header">
+      <span class="entry-title">DNS/HTTP Network Communication Simulation</span>
+      <span class="entry-date">May 2026</span>
+    </div>
+    <div class="entry-subtitle">C++, Winsock API, Networking</div>
+    <ul>
+      <li>Simulated DNS name resolution over UDP and HTTP communication over TCP using the Windows Winsock API.</li>
+      <li>Implemented shortest-path routing algorithms and measured QoS metrics including latency, BER, and packet-loss behavior.</li>
+    </ul>
+  </div>
 
-      <div class="project">
-        <div class="project-header">
-          <div class="project-name">
-            <a href="https://github.com/alielhelisy/Performance-Analysis-of-Multithreading-Parallel-Computation" target="_blank">
-              Multithreading Performance Analysis
-            </a>
-          </div>
-          <span class="project-tech">C++ · std::thread · Parallel Computing</span>
-        </div>
-        <div class="project-desc">
-          <ul>
-            <li>Benchmarked single-threaded vs. multi-threaded matrix multiplication using <strong>std::thread</strong> and <strong>chrono</strong> for precise timing.</li>
-            <li>Analyzed speedup, thread overhead, and optimal thread-count trade-offs.</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Education -->
-      <div class="section-title">Education</div>
-      <div class="edu-entry">
-        <div class="edu-degree">B.Sc. Computer Engineering</div>
-        <div class="edu-school">[University Name] <!-- fill in --></div>
-        <div class="edu-date">Expected Graduation: [Year] <!-- fill in --></div>
-      </div>
-
-    </div><!-- /main -->
-
-    <!-- ── SIDEBAR ── -->
-    <div class="sidebar">
-
-      <div class="section-title">Technical Skills</div>
-
-      <div class="skill-group">
-        <div class="skill-label">Languages</div>
-        <div class="pills">
-          <span class="pill">Python</span>
-          <span class="pill">C++</span>
-          <span class="pill">C</span>
-          <span class="pill">Java</span>
-          <span class="pill">C#</span>
-          <span class="pill">JavaScript</span>
-          <span class="pill">T-SQL</span>
-        </div>
-      </div>
-
-      <div class="skill-group">
-        <div class="skill-label">Web &amp; Frameworks</div>
-        <div class="pills">
-          <span class="pill">Flask</span>
-          <span class="pill">ASP.NET Core MVC</span>
-          <span class="pill">Node.js</span>
-          <span class="pill">Express</span>
-          <span class="pill">Jinja2</span>
-          <span class="pill">HTML</span>
-          <span class="pill">CSS</span>
-          <span class="pill">Swagger</span>
-        </div>
-      </div>
-
-      <div class="skill-group">
-        <div class="skill-label">Databases</div>
-        <div class="pills">
-          <span class="pill">Microsoft SQL Server</span>
-          <span class="pill">Relational Design</span>
-          <span class="pill">EER Modeling</span>
-          <span class="pill">Triggers</span>
-        </div>
-      </div>
-
-      <div class="skill-group">
-        <div class="skill-label">Tools &amp; Practices</div>
-        <div class="pills">
-          <span class="pill">Git</span>
-          <span class="pill">GitHub</span>
-          <span class="pill">pytest</span>
-          <span class="pill">OOP</span>
-          <span class="pill">REST APIs</span>
-          <span class="pill">Winsock</span>
-          <span class="pill">std::thread</span>
-          <span class="pill">MVC</span>
-          <span class="pill">CRUD</span>
-          <span class="pill">SAD</span>
-        </div>
-      </div>
-
-      <div class="section-title" style="margin-top:28px;">Areas of Interest</div>
-      <div class="interests">
-        <ul>
-          <li>Full-stack web development</li>
-          <li>Relational database design</li>
-          <li>Object-oriented systems</li>
-          <li>Computer networks &amp; routing</li>
-          <li>Parallel &amp; concurrent programming</li>
-          <li>Software engineering &amp; design</li>
-        </ul>
-      </div>
-
-      <div class="section-title" style="margin-top:28px;">Contact</div>
-      <div style="font-size:0.81rem; color:#333; line-height:1.9;">
-        <div>✉ <a href="mailto:elhelesya@gmail.com" style="color:#0f3460;">elhelesya@gmail.com</a></div>
-        <div>⌂ <a href="https://github.com/alielhelisy" style="color:#0f3460;" target="_blank">github.com/alielhelisy</a></div>
-        <div>in <a href="https://www.linkedin.com/in/ali-elhelisy-8ba760405" style="color:#0f3460;" target="_blank">Ali Elhelisy</a></div>
-      </div>
-
-    </div><!-- /sidebar -->
-  </div><!-- /body -->
+  <div class="entry">
+    <div class="entry-header">
+      <span class="entry-title">Multithreading Performance Analysis</span>
+      <span class="entry-date">May 2026</span>
+    </div>
+    <div class="entry-subtitle">C++, std::thread, Parallel Computing</div>
+    <ul>
+      <li>Benchmarked single-threaded versus multi-threaded matrix multiplication using std::thread and the chrono library for high-resolution timing.</li>
+      <li>Analyzed thread speedup, overhead costs, and optimal thread-count trade-offs under different workload sizes.</li>
+    </ul>
+  </div>
 
 </div><!-- /page -->
 </body>
