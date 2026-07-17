@@ -1,0 +1,854 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NadaOS v19.0</title>
+<style>
+  :root {
+    --glass: #050807;
+    --bezel: #101614;
+    --screen: #0a120d;
+    --ink: #7dffa0;
+    --ink-dim: #3f9c5f;
+    --ink-faint: #215239;
+    --ink-bright: #eaffee;
+    --amber: #ffc76a;
+    --alert: #ff6b5e;
+    --cyan: #7ae7ff;
+    --magenta: #ff8ad8;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--glass);
+    color: var(--ink);
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: clamp(13px, 2.8vw, 16px);
+    line-height: 1.65;
+    display: flex;
+    justify-content: center;
+    padding: clamp(8px, 3vw, 32px);
+  }
+
+  [hidden] { display: none !important; }
+
+  #crt {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    background: var(--bezel);
+    border-radius: 18px;
+    padding: clamp(10px, 2.5vw, 22px);
+    box-shadow: 0 12px 60px rgba(0, 0, 0, .8);
+    align-self: flex-start;
+  }
+
+  #screen {
+    position: relative;
+    background: var(--screen);
+    border-radius: 10px;
+    padding: clamp(16px, 4vw, 34px);
+    min-height: min(86vh, 640px);
+    overflow: hidden;
+    box-shadow: inset 0 0 90px rgba(0, 0, 0, .65);
+  }
+
+  /* scanlines + moving refresh bar */
+  #screen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0px,
+      rgba(0, 0, 0, 0) 2px,
+      rgba(0, 0, 0, .18) 3px
+    );
+    border-radius: 10px;
+    z-index: 4;
+  }
+  #screen::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    height: 90px;
+    top: -90px;
+    background: linear-gradient(to bottom, rgba(125, 255, 160, 0), rgba(125, 255, 160, .05), rgba(125, 255, 160, 0));
+    animation: refresh 7s linear infinite;
+    pointer-events: none;
+    z-index: 4;
+  }
+  @keyframes refresh { to { top: 110%; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    #screen::after { animation: none; display: none; }
+    .cursor { animation: none !important; }
+    #power-btn { animation: none !important; }
+  }
+
+  section { position: relative; z-index: 2; }
+
+  pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font: inherit;
+    text-shadow: 0 0 8px rgba(125, 255, 160, .35);
+  }
+
+  .dim    { color: var(--ink-dim); }
+  .bright { color: var(--ink-bright); text-shadow: 0 0 10px rgba(234, 255, 238, .45); }
+  .amber  { color: var(--amber); text-shadow: 0 0 8px rgba(255, 199, 106, .4); }
+  .alert  { color: var(--alert); text-shadow: 0 0 8px rgba(255, 107, 94, .4); }
+
+  .cursor {
+    display: inline-block;
+    width: .6em;
+    height: 1.1em;
+    background: var(--ink);
+    vertical-align: text-bottom;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ---------- power stage ---------- */
+  #stage-power {
+    min-height: min(80vh, 570px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 26px;
+  }
+  #power-btn {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    border: 2px solid var(--ink-dim);
+    background: radial-gradient(circle at 50% 38%, #14251a, #0a120d 70%);
+    color: var(--ink);
+    font-size: 34px;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 0 24px rgba(125, 255, 160, .25);
+    animation: breathe 2.6s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    50% { box-shadow: 0 0 44px rgba(125, 255, 160, .5); border-color: var(--ink); }
+  }
+  #power-btn:hover, #power-btn:focus-visible { border-color: var(--ink-bright); }
+  #stage-power p { color: var(--ink-dim); margin: 0; }
+
+  /* ---------- forms / inputs ---------- */
+  .prompt-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5ch; margin-top: 12px; }
+
+  input[type="text"], input[type="password"] {
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--ink-dim);
+    color: var(--ink-bright);
+    font: inherit;
+    padding: 2px 4px;
+    min-width: 11ch;
+    text-shadow: 0 0 8px rgba(234, 255, 238, .35);
+  }
+  input:focus { outline: none; border-bottom-color: var(--amber); }
+  input:focus-visible { outline: 1px dashed var(--amber); outline-offset: 3px; }
+
+  button.key {
+    background: transparent;
+    border: 1px solid var(--ink-dim);
+    color: var(--ink);
+    font: inherit;
+    padding: 4px 18px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  button.key:hover, button.key:focus-visible { border-color: var(--ink); background: rgba(125, 255, 160, .08); outline: none; }
+
+  .feedback { min-height: 1.6em; margin-top: 10px; }
+
+  /* ---------- modules ---------- */
+  .module-head {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: var(--ink-dim);
+    border-bottom: 1px solid var(--ink-faint);
+    padding-bottom: 8px;
+    margin-bottom: 18px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-size: .85em;
+  }
+
+  .toggles { display: flex; gap: 14px; margin: 16px 0; flex-wrap: wrap; }
+  .toggles button {
+    background: transparent;
+    border: 1px solid var(--ink-dim);
+    color: var(--ink-bright);
+    font: inherit;
+    font-size: 1.05em;
+    padding: 8px 20px;
+    cursor: pointer;
+    border-radius: 6px;
+    min-width: 96px;
+  }
+  .toggles button[data-on="1"] {
+    border-color: var(--ink);
+    background: rgba(125, 255, 160, .12);
+    box-shadow: 0 0 14px rgba(125, 255, 160, .25);
+  }
+  .toggles button:focus-visible { outline: 1px dashed var(--amber); outline-offset: 3px; }
+
+  #circuit { width: 100%; max-width: 430px; height: auto; display: block; margin: 6px 0; }
+  .wire { stroke: var(--ink-faint); stroke-width: 3; fill: none; }
+  .wire.on { stroke: var(--ink); filter: drop-shadow(0 0 4px rgba(125, 255, 160, .8)); }
+  .gate { stroke: var(--ink-dim); stroke-width: 2.5; fill: none; }
+  .gate-label { fill: var(--ink-dim); font-size: 13px; font-family: inherit; }
+  .sig-label { fill: var(--ink-bright); font-size: 15px; font-family: inherit; }
+  #led { fill: #16241b; stroke: var(--ink-dim); stroke-width: 2.5; }
+  #led.on { fill: var(--amber); stroke: var(--amber); filter: drop-shadow(0 0 10px rgba(255, 199, 106, .9)); }
+
+  .hint-box { color: var(--ink-dim); border: 1px dashed var(--ink-faint); padding: 8px 12px; margin-top: 12px; border-radius: 4px; }
+  a.hint-toggle { color: var(--ink-dim); cursor: pointer; text-decoration: underline dotted; }
+
+  /* ---------- party ---------- */
+  #stage-party { text-align: left; }
+
+  .headline {
+    color: var(--ink-bright);
+    font-size: clamp(1.7rem, 7.5vw, 3.1rem);
+    line-height: 1.15;
+    letter-spacing: .04em;
+    margin: 18px 0 4px;
+    text-shadow:
+      0 0 14px rgba(234, 255, 238, .5),
+      0 0 42px rgba(125, 255, 160, .35);
+    text-wrap: balance;
+  }
+  .headline .n19 { color: var(--amber); text-shadow: 0 0 18px rgba(255, 199, 106, .6); }
+
+  .arabic {
+    font-size: clamp(1.05rem, 4.2vw, 1.4rem);
+    color: var(--amber);
+    margin: 6px 0 22px;
+    text-shadow: 0 0 10px rgba(255, 199, 106, .4);
+  }
+
+  .spec {
+    border: 1px solid var(--ink-faint);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin: 18px 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 20px;
+    font-variant-numeric: tabular-nums;
+  }
+  .spec dt { color: var(--ink-dim); margin: 0; text-transform: uppercase; font-size: .82em; letter-spacing: .1em; align-self: baseline; }
+  .spec dd { color: var(--ink-bright); margin: 0; }
+
+  .letter {
+    border-left: 3px solid var(--amber);
+    padding: 4px 0 4px 16px;
+    margin: 22px 0;
+    color: var(--ink);
+    max-width: 62ch;
+  }
+  .letter .sig { color: var(--amber); margin-top: 10px; }
+
+  /* terminal */
+  #term {
+    border: 1px solid var(--ink-faint);
+    border-radius: 6px;
+    margin-top: 24px;
+    padding: 12px 14px;
+  }
+  #term-head { color: var(--ink-dim); font-size: .82em; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+  #term-out { max-height: 260px; overflow-y: auto; }
+  #term-form { display: flex; align-items: baseline; gap: .6ch; margin-top: 6px; }
+  #term-form .ps1 { color: var(--cyan); white-space: nowrap; text-shadow: 0 0 8px rgba(122, 231, 255, .35); }
+  #term-in { flex: 1; border-bottom: none; min-width: 6ch; }
+
+  #confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+  }
+
+  .flash { animation: flashin .55s ease-out; }
+  @keyframes flashin {
+    0% { filter: brightness(3.2); }
+    100% { filter: brightness(1); }
+  }
+  @media (prefers-reduced-motion: reduce) { .flash { animation: none; } }
+</style>
+</head>
+<body>
+<div id="crt">
+  <div id="screen">
+
+    <!-- 0 · POWER -->
+    <section id="stage-power">
+      <button id="power-btn" aria-label="Power on">&#9211;</button>
+      <p>a gift for Nada &mdash; press power to boot</p>
+    </section>
+
+    <!-- 1 · BIOS BOOT -->
+    <section id="stage-boot" hidden>
+      <pre id="boot-out"></pre>
+      <p id="boot-next" class="amber" hidden>press ENTER or tap anywhere to continue <span class="cursor"></span></p>
+    </section>
+
+    <!-- 2 · LOGIN -->
+    <section id="stage-login" hidden>
+      <pre class="dim">NadaOS v19.0 — secure login
+────────────────────────────</pre>
+      <pre>
+login: <span class="bright">nada</span></pre>
+      <form id="login-form" autocomplete="off">
+        <div class="prompt-row">
+          <label for="login-pass">password:</label>
+          <input id="login-pass" type="password" inputmode="numeric" autocomplete="off" aria-describedby="login-hint" />
+          <button class="key" type="submit">ENTER</button>
+        </div>
+      </form>
+      <p id="login-hint" class="dim">hint: the 6 digits on your Sohar University ID card</p>
+      <p id="login-fb" class="feedback"></p>
+    </section>
+
+    <!-- 3 · REPAIR MODULES -->
+    <section id="stage-modules" hidden>
+      <div class="module-head">
+        <span>repair console</span>
+        <span id="mod-progress">modules [ ░ ░ ░ ]</span>
+      </div>
+
+      <div id="mod-1">
+        <pre><span class="alert">MODULE 1/3 — BINARY DECODER offline.</span>
+
+The system version register reads:
+
+    <span class="bright">0b10011</span>
+
+Enter the version in decimal to restore it.</pre>
+        <form id="m1-form" autocomplete="off">
+          <div class="prompt-row">
+            <label for="m1-in">decimal:</label>
+            <input id="m1-in" type="text" inputmode="numeric" autocomplete="off" />
+            <button class="key" type="submit">RUN</button>
+          </div>
+        </form>
+        <p id="m1-fb" class="feedback"></p>
+      </div>
+
+      <div id="mod-2" hidden>
+        <pre><span class="alert">MODULE 2/3 — LOGIC CORE damaged.</span>
+
+Set switches A, B, C so the output LED lights up.</pre>
+        <svg id="circuit" viewBox="0 0 360 215" role="img" aria-label="Logic circuit: A and B feed an AND gate; C feeds a NOT gate; both results feed a second AND gate driving the LED">
+          <text class="sig-label" x="14" y="55">A</text>
+          <text class="sig-label" x="14" y="85">B</text>
+          <text class="sig-label" x="14" y="170">C</text>
+
+          <line id="w-a" class="wire" x1="34" y1="50" x2="110" y2="50" />
+          <line id="w-b" class="wire" x1="34" y1="80" x2="110" y2="80" />
+          <line id="w-c" class="wire" x1="34" y1="165" x2="110" y2="165" />
+
+          <path class="gate" d="M110,35 h25 a30,30 0 0 1 0,60 h-25 z" />
+          <text class="gate-label" x="112" y="70">AND</text>
+
+          <path class="gate" d="M110,145 L145,165 L110,185 z" />
+          <circle class="gate" cx="151" cy="165" r="6" />
+          <text class="gate-label" x="106" y="205">NOT</text>
+
+          <polyline id="w-and1" class="wire" points="165,65 190,65 190,90 215,90" />
+          <polyline id="w-not" class="wire" points="157,165 190,165 190,120 215,120" />
+
+          <path class="gate" d="M215,75 h25 a30,30 0 0 1 0,60 h-25 z" />
+          <text class="gate-label" x="217" y="110">AND</text>
+
+          <line id="w-out" class="wire" x1="270" y1="105" x2="308" y2="105" />
+          <circle id="led" cx="322" cy="105" r="11" />
+          <text class="gate-label" x="308" y="135">LED</text>
+        </svg>
+        <div class="toggles">
+          <button type="button" data-sig="a" data-on="0">A = 0</button>
+          <button type="button" data-sig="b" data-on="0">B = 0</button>
+          <button type="button" data-sig="c" data-on="0">C = 0</button>
+        </div>
+        <p id="m2-fb" class="feedback"></p>
+      </div>
+
+      <div id="mod-3" hidden>
+        <pre><span class="alert">MODULE 3/3 — MEMORY DUMP encrypted.</span>
+
+A hidden user alias was found at address 0x0707:
+
+    <span class="bright">0x44  0x4F  0x44  0x44  0x41</span>
+
+Decode it (ASCII) to finish the repair.</pre>
+        <form id="m3-form" autocomplete="off">
+          <div class="prompt-row">
+            <label for="m3-in">alias:</label>
+            <input id="m3-in" type="text" autocomplete="off" autocapitalize="off" />
+            <button class="key" type="submit">RUN</button>
+          </div>
+        </form>
+        <p><a id="m3-hint-toggle" class="hint-toggle">need the ASCII table?</a></p>
+        <div id="m3-hint" class="hint-box" hidden>0x41 = A &nbsp;·&nbsp; 0x44 = D &nbsp;·&nbsp; 0x4F = O &nbsp;·&nbsp; ( letters count up from 0x41... )</div>
+        <p id="m3-fb" class="feedback"></p>
+      </div>
+    </section>
+
+    <!-- 4 · INSTALL -->
+    <section id="stage-install" hidden>
+      <pre id="install-out"></pre>
+      <pre id="install-bar" class="amber"></pre>
+    </section>
+
+    <!-- 5 · PARTY -->
+    <section id="stage-party" hidden>
+      <pre class="dim">birthday.exe — running ✓</pre>
+
+      <h1 class="headline">HAPPY <span class="n19">19TH</span> BIRTHDAY,<br />NADA!</h1>
+      <p class="arabic" dir="rtl" lang="ar">كل عام وإنتِ بخير يا ندى 🎂</p>
+
+      <dl class="spec">
+        <dt>unit</dt><dd>Nada “dodda” Shahin</dd>
+        <dt>released</dt><dd>30/07/2007</dd>
+        <dt>version</dt><dd>19.0&nbsp;&nbsp;( = 0b10011 = 0x13 )</dd>
+        <dt>faculty</dt><dd>Computer Engineering — Sohar University</dd>
+        <dt>year 1</dt><dd>✓ completed</dd>
+        <dt>year 2</dt><dd><span class="amber">compiling…</span></dd>
+      </dl>
+
+      <div class="letter">
+        <p>Happy birthday, Dodda! You debugged your way through year one —
+        the circuits, the code, the all-nighters — and came out the other
+        side smarter and still smiling. May version 19 bring you high
+        grades, low stress, and programs that compile on the first try.</p>
+        <p class="sig">— your friend, who built you an entire operating system</p>
+      </div>
+
+      <div id="term">
+        <div id="term-head">nadaos terminal — type <span class="amber">help</span> and press enter</div>
+        <pre id="term-out"></pre>
+        <form id="term-form" autocomplete="off">
+          <span class="ps1">nada@nadaos:~$</span>
+          <input id="term-in" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="terminal command" />
+        </form>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<canvas id="confetti"></canvas>
+
+<script>
+(function () {
+  "use strict";
+
+  var $ = function (id) { return document.getElementById(id); };
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var STAGES = ["power", "boot", "login", "modules", "install", "party"];
+  var stage = "power";
+
+  function show(name) {
+    STAGES.forEach(function (s) { $("stage-" + s).hidden = (s !== name); });
+    stage = name;
+    $("screen").classList.remove("flash");
+    void $("screen").offsetWidth;
+    $("screen").classList.add("flash");
+  }
+
+  /* ---------- typewriter ---------- */
+  var typer = { timer: null, skip: null };
+
+  function typeLines(el, lines, done) {
+    var full = lines.join("\n");
+    if (reduced) { el.textContent = full; done(); return; }
+    // reveal by elapsed time, not per-tick, so throttled timers can't stall it
+    var times = [];
+    var t = 0;
+    for (var i = 0; i < full.length; i++) {
+      t += full.charAt(i) === "\n" ? 90 : 9;
+      times.push(t);
+    }
+    var start = performance.now();
+    var shown = 0;
+    el.textContent = "";
+    typer.skip = function () {
+      clearTimeout(typer.timer);
+      typer.skip = null;
+      el.textContent = full;
+      done();
+    };
+    (function tick() {
+      var elapsed = performance.now() - start;
+      while (shown < full.length && times[shown] <= elapsed) { shown++; }
+      el.textContent = full.slice(0, shown);
+      if (shown >= full.length) { typer.skip = null; done(); return; }
+      typer.timer = setTimeout(tick, 16);
+    })();
+  }
+
+  /* ---------- confetti ---------- */
+  var canvas = $("confetti");
+  var ctx = canvas.getContext("2d");
+  var parts = [];
+  var confettiRunning = false;
+  var COLORS = ["#7dffa0", "#ffc76a", "#7ae7ff", "#ff8ad8", "#eaffee"];
+
+  function sizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener("resize", sizeCanvas);
+  sizeCanvas();
+
+  function burst(n) {
+    if (reduced) return;
+    for (var i = 0; i < n; i++) {
+      parts.push({
+        x: Math.random() * canvas.width,
+        y: -12 - Math.random() * canvas.height * 0.3,
+        vx: (Math.random() - 0.5) * 2.4,
+        vy: 1.6 + Math.random() * 3.2,
+        s: 4 + Math.random() * 6,
+        rot: Math.random() * Math.PI,
+        vr: (Math.random() - 0.5) * 0.25,
+        c: COLORS[(Math.random() * COLORS.length) | 0]
+      });
+    }
+    if (!confettiRunning) { confettiRunning = true; requestAnimationFrame(step); }
+  }
+
+  function step() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    parts = parts.filter(function (p) { return p.y < canvas.height + 20; });
+    parts.forEach(function (p) {
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.c;
+      ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * 0.6);
+      ctx.restore();
+    });
+    if (parts.length) { requestAnimationFrame(step); }
+    else { confettiRunning = false; ctx.clearRect(0, 0, canvas.width, canvas.height); }
+  }
+
+  /* ---------- 0 · power ---------- */
+  $("power-btn").addEventListener("click", function () {
+    show("boot");
+    runBoot();
+  });
+
+  /* ---------- 1 · boot ---------- */
+  var bootDone = false;
+  var BOOT_LINES = [
+    "SOHAR-UNI MODIFIED BIOS  v25.24.07",
+    "Copyright (C) 2007–2026, Dodda Systems Inc.",
+    "",
+    "Detecting CPU .............. NADA-0x13 CORE @ 19 GHz",
+    "CPU cores .................. 2  (coffee + deadlines)",
+    "Memory test ................ 19 years ......... OK",
+    "Storage .................... 1 heart, solid state",
+    "Boot device ................ /dev/birthday .... OK",
+    "",
+    "Loading NadaOS v19.0 ...........................",
+    "",
+    "WARNING: celebration.sys is LOCKED.",
+    "User verification required."
+  ];
+
+  function runBoot() {
+    typeLines($("boot-out"), BOOT_LINES, function () {
+      bootDone = true;
+      $("boot-next").hidden = false;
+    });
+  }
+
+  function bootAdvance() {
+    if (stage !== "boot") return;
+    if (typer.skip) { typer.skip(); return; }
+    if (bootDone) {
+      show("login");
+      $("login-pass").focus();
+    }
+  }
+  $("stage-boot").addEventListener("click", bootAdvance);
+
+  /* ---------- 2 · login ---------- */
+  // the password is checked against a hash so it never appears in this source
+  var ID_HASH = "ed2f698415042f4cf494bfdb8e267ed6984235065bc7f8b5c138e48431234150";
+
+  function sha256hex(s) {
+    return crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)).then(function (buf) {
+      return Array.prototype.map.call(new Uint8Array(buf), function (b) {
+        return b.toString(16).padStart(2, "0");
+      }).join("");
+    });
+  }
+
+  var DENIALS = [
+    "ACCESS DENIED — nice try, but only Nada gets in.",
+    "ACCESS DENIED — still not it. Check your uni ID…",
+    "ACCESS DENIED — hint 2: six digits, starts with 25."
+  ];
+  var attempts = 0;
+
+  $("login-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = $("login-pass").value.trim();
+    var fb = $("login-fb");
+    sha256hex(v).then(function (h) {
+      if (h === ID_HASH) {
+        fb.innerHTML = '<span class="bright">ACCESS GRANTED — welcome back, Nada.</span>';
+        setTimeout(function () {
+          show("modules");
+          $("m1-in").focus();
+        }, 900);
+      } else {
+        fb.innerHTML = '<span class="alert">' + DENIALS[Math.min(attempts, DENIALS.length - 1)] + "</span>";
+        attempts++;
+        $("login-pass").value = "";
+        $("login-pass").focus();
+      }
+    });
+  });
+
+  /* ---------- 3 · modules ---------- */
+  var repaired = 0;
+
+  function markRepaired(nextId) {
+    repaired++;
+    var blocks = ["░", "░", "░"].map(function (b, i) { return i < repaired ? "█" : "░"; });
+    $("mod-progress").textContent = "modules [ " + blocks.join(" ") + " ]";
+    if (nextId) {
+      setTimeout(function () {
+        $("mod-" + (repaired)).hidden = true;
+        $(nextId).hidden = false;
+        var inp = $(nextId).querySelector("input");
+        if (inp) inp.focus();
+      }, 1100);
+    } else {
+      setTimeout(startInstall, 1200);
+    }
+  }
+
+  /* module 1 — binary */
+  $("m1-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = $("m1-in").value.trim();
+    var fb = $("m1-fb");
+    if (v === "19") {
+      fb.innerHTML = '<span class="bright">✓ MODULE 1 REPAIRED — correct, you’re turning 0x13. Sounds younger in hex.</span>';
+      markRepaired("mod-2");
+    } else if (v !== "") {
+      fb.innerHTML = '<span class="alert">✗ segmentation fault — count the place values: 16 + 2 + 1…</span>';
+      $("m1-in").select();
+    }
+  });
+
+  /* module 2 — logic gates: OUT = (A AND B) AND (NOT C) */
+  var sig = { a: 0, b: 0, c: 0 };
+  var m2solved = false;
+
+  function setWire(id, on) {
+    $(id).classList.toggle("on", !!on);
+  }
+
+  function evalCircuit() {
+    var and1 = sig.a && sig.b;
+    var notc = !sig.c;
+    var out = and1 && notc;
+    setWire("w-a", sig.a);
+    setWire("w-b", sig.b);
+    setWire("w-c", sig.c);
+    setWire("w-and1", and1);
+    setWire("w-not", notc);
+    setWire("w-out", out);
+    $("led").classList.toggle("on", !!out);
+    if (out && !m2solved) {
+      m2solved = true;
+      $("m2-fb").innerHTML = '<span class="bright">✓ MODULE 2 REPAIRED — LED on. A number-1 logic student.</span>';
+      Array.prototype.forEach.call(document.querySelectorAll(".toggles button"), function (b) { b.disabled = true; });
+      markRepaired("mod-3");
+    }
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll(".toggles button"), function (btn) {
+    btn.addEventListener("click", function () {
+      var k = btn.getAttribute("data-sig");
+      sig[k] = sig[k] ? 0 : 1;
+      btn.setAttribute("data-on", String(sig[k]));
+      btn.textContent = k.toUpperCase() + " = " + sig[k];
+      evalCircuit();
+    });
+  });
+  evalCircuit();
+
+  /* module 3 — ASCII */
+  $("m3-hint-toggle").addEventListener("click", function () {
+    $("m3-hint").hidden = !$("m3-hint").hidden;
+  });
+
+  $("m3-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = $("m3-in").value.trim().toLowerCase();
+    var fb = $("m3-fb");
+    if (v === "dodda") {
+      fb.innerHTML = '<span class="bright">✓ MODULE 3 REPAIRED — alias confirmed: dodda. Identity verified twice.</span>';
+      markRepaired(null);
+    } else if (v !== "") {
+      fb.innerHTML = '<span class="alert">✗ decode error — remember: 0x41 is where the alphabet begins.</span>';
+      $("m3-in").select();
+    }
+  });
+
+  /* ---------- 4 · install ---------- */
+  var INSTALL_LINES = [
+    "repair complete — 3/3 modules online",
+    "",
+    "verifying user ............. NADA ✓",
+    "verifying age .............. 0x13 ✓",
+    "unpacking gift.tar.gz ...... done",
+    "",
+    "installing birthday.exe"
+  ];
+
+  function startInstall() {
+    show("install");
+    typeLines($("install-out"), INSTALL_LINES, function () {
+      var bar = $("install-bar");
+      var t0 = performance.now();
+      (function fill() {
+        // 1.6s to full, measured by wall time so throttling can't stall it
+        var pct = reduced ? 100 : Math.min(100, Math.round((performance.now() - t0) / 16));
+        var blocks = Math.round(pct / 5);
+        bar.textContent = "[" + "█".repeat(blocks) + "░".repeat(20 - blocks) + "] " + pct + "%";
+        if (pct >= 100) {
+          bar.textContent += "\nlaunching celebration…";
+          setTimeout(startParty, reduced ? 200 : 700);
+          return;
+        }
+        setTimeout(fill, 40);
+      })();
+    });
+  }
+
+  /* ---------- 5 · party ---------- */
+  function startParty() {
+    show("party");
+    burst(140);
+    setTimeout(function () { burst(90); }, 500);
+    setTimeout(function () { burst(70); }, 1100);
+    if (window.innerWidth > 700) { $("term-in").focus(); }
+  }
+
+  /* terminal */
+  function uptimeStr() {
+    var born = new Date(2007, 6, 30);
+    var now = new Date();
+    var years = now.getFullYear() - born.getFullYear();
+    var anniv = new Date(now.getFullYear(), 6, 30);
+    if (now < anniv) years--;
+    var last = new Date(born);
+    last.setFullYear(born.getFullYear() + years);
+    var days = Math.floor((now - last) / 86400000);
+    return "uptime: " + years + " years, " + days + " days — zero critical failures.";
+  }
+
+  var CMDS = {
+    help: function () {
+      return [
+        "available commands:",
+        "  whoami          who is this user, anyway",
+        "  whois dodda     classified file",
+        "  birthday        release history",
+        "  uptime          time since first boot",
+        "  cat gift.txt    read your gift message again",
+        "  sudo celebrate  run with party privileges",
+        "  clear           clean the screen"
+      ].join("\n");
+    },
+    whoami: function () {
+      return "Nada Shahin — Computer Engineering, Sohar University.\nStatus: officially 19. Year 1: survived. Year 2: loading…";
+    },
+    "whois dodda": function () {
+      return "dodda — classified alias of Nada Shahin.\nKnown for: surviving Year 1 of Computer Engineering.\nThreat level: adorable.";
+    },
+    birthday: function () {
+      return "30/07/2007 — kernel first compiled.\n30/07/2026 — version 19.0 released to production. 🎂";
+    },
+    uptime: uptimeStr,
+    "cat gift.txt": function () {
+      return "Happy birthday, Dodda! May version 19 bring you high grades,\nlow stress, and programs that compile on the first try. 💚";
+    },
+    "sudo celebrate": function () {
+      burst(200);
+      return "PARTY PROTOCOL ELEVATED — running with full privileges. 🎉";
+    },
+    celebrate: function () {
+      return "permission denied — try: sudo celebrate";
+    },
+    exit: function () {
+      return "nice try — birthdays cannot be exited.";
+    },
+    clear: null
+  };
+
+  var termOut = $("term-out");
+
+  function termPrint(text) {
+    termOut.textContent += (termOut.textContent ? "\n" : "") + text;
+    termOut.scrollTop = termOut.scrollHeight;
+  }
+
+  $("term-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var raw = $("term-in").value.trim();
+    $("term-in").value = "";
+    if (!raw) return;
+    var key = raw.toLowerCase().replace(/\s+/g, " ");
+    termPrint("nada@nadaos:~$ " + raw);
+    if (key === "clear") { termOut.textContent = ""; return; }
+    var fn = CMDS[key];
+    if (fn) { termPrint(fn()); return; }
+    if (/^\d{6}$/.test(key)) {
+      sha256hex(key).then(function (h) {
+        termPrint(h === ID_HASH
+          ? "yes, that's you. identity confirmed. again."
+          : "command not found: " + raw + " — try 'help'");
+      });
+      return;
+    }
+    termPrint("command not found: " + raw + " — try 'help'");
+  });
+
+  /* ---------- global keys ---------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter") return;
+    if (stage === "power") { $("power-btn").click(); }
+    else if (stage === "boot") { bootAdvance(); }
+  });
+
+})();
+</script>
+</body>
+</html>
